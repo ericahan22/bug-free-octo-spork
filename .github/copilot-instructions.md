@@ -11,18 +11,24 @@ This is a full-stack web application consisting of a Django REST API backend and
   - Backend setup:
     ```bash
     cd backend
-    pip install -r requirements.txt  # Takes ~22 seconds. NEVER CANCEL.
-    export USE_SQLITE=1
-    python manage.py migrate        # Takes <1 second
-    python manage.py runserver 8000 # Starts immediately
+    source .venv/bin/activate
+    pip install -r requirements.txt   
+    python manage.py migrate    
+    python manage.py runserver 8000  
     ```
   - Frontend setup:
     ```bash
     cd frontend
-    npm install                     # Takes ~12 seconds. NEVER CANCEL.
-    npm run build                   # Takes ~9 seconds. NEVER CANCEL. Set timeout to 30+ seconds.
-    npm run dev                     # Starts immediately on port 5173
+    npm install                
+    npm run build                 
+    npm run dev                   
     ```
+
+   - Testing the ai_client with mock caption and mock image url:
+   ```bash
+   cd backend
+   python test_ai_client.py
+   ```
 
 ### Development Database Configuration
 - **CRITICAL**: Always set `export USE_SQLITE=1` before running Django commands for local development

@@ -6,6 +6,16 @@ class Clubs(models.Model):
     club_page = models.URLField(blank=True, null=True)
     ig = models.URLField(blank=True, null=True)  # Changed from insta_url to ig
     discord = models.URLField(blank=True, null=True)  # Added discord field
+    club_type = models.CharField(
+        max_length=50,
+        null=True,
+        blank=True,
+        choices=[
+            ("WUSA", "WUSA"),
+            ("Athletics", "Athletics"),
+            ("Student Society", "Student Society"),
+        ],
+    )
 
     class Meta:
         db_table = 'clubs'  # Remove api_ prefix
@@ -21,6 +31,10 @@ class Events(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField()
     location = models.CharField(max_length=255)
+    price = models.FloatField(blank=True, null=True)
+    food = models.CharField(max_length=255, blank=True, null=True)
+    registration = models.BooleanField(default=False)
+    image_url = models.URLField(blank=True, null=True)
 
     class Meta:
         db_table = 'events'  # Remove api_ prefix

@@ -16,9 +16,11 @@ import {
   Clock,
   MapPin,
   ExternalLink,
+  Utensils,
+  DollarSign,
 } from "lucide-react";
 import "../styles/calendar.css";
-import { formatTimeRange } from "@/lib/dateUtils";
+import { formatPrettyDate, formatTimeRange } from "@/lib/dateUtils";
 
 const locales = {
   "en-US": enUS,
@@ -41,6 +43,11 @@ interface Event {
   location: string;
   club_handle: string;
   url?: string;
+  image_url?: string | null;
+  club_type?: "WUSA" | "Athletics" | "Student Society" | null;
+  price?: number | null;
+  food?: string | null;
+  registration?: boolean;
 }
 
 interface EventsCalendarProps {
@@ -144,6 +151,26 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
       end,
     };
   });
+
+  // Custom styles for events based on club_type
+  const eventPropGetter = (event: typeof calendarEvents[number]) => {
+    let backgroundColor = "#3a7bd5";
+    if (event.club_type === "WUSA") {
+      backgroundColor = "#4b9b6a";
+    } else if (event.club_type === "Athletics") {
+      backgroundColor = "#d9924a";
+    } else if (event.club_type === "Student Society") {
+      backgroundColor = "#d16c6c";
+    }
+    return {
+      style: {
+        backgroundColor,
+        borderRadius: "6px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+        border: "1px solid rgba(0, 0, 0, 0.15)",
+      },
+    };
+  };
 
   const handleNavigate = (
     newDate: Date,
@@ -258,6 +285,7 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
         components={{
           toolbar: CustomToolbar,
         }}
+        eventPropGetter={eventPropGetter}
       />
 
       {/* Event details popup */}
@@ -278,6 +306,21 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
             ✕
           </button>
 
+          {/* Event Image */}
+          {selectedEvent.image_url && (
+            <div className="mb-3 -mx-4 -mt-4">
+              <img 
+                src={selectedEvent.image_url} 
+                alt={selectedEvent.name}
+                className="w-full h-40 object-cover rounded-t-lg"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+
           <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-1 pr-8">
             {selectedEvent.name}
           </h2>
@@ -287,7 +330,7 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
 
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
             <CalendarIcon className="h-4 w-4 flex-shrink-0" />
-            <span>{format(new Date(selectedEvent.date), "MMMM dd, yyyy")}</span>
+            <span>{formatPrettyDate(selectedEvent.date)}</span>
           </div>
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
             <Clock className="h-4 w-4 flex-shrink-0" />
@@ -305,6 +348,29 @@ const EventsCalendar: React.FC<EventsCalendarProps> = ({ events }) => {
               </span>
             </div>
           )}
+
+          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <DollarSign className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">
+              {selectedEvent.price === null || selectedEvent.price === 0 ? "Free" : `${selectedEvent.price}`}
+            </span>
+          </div>
+
+          {selectedEvent.food && (
+            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-2">
+              <Utensils className="h-4 w-4 flex-shrink-0" />
+              <span className="truncate" title={selectedEvent.food}>
+                {selectedEvent.food}
+              </span>
+            </div>
+          )}
+
+          {selectedEvent.registration && (
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              <span className="italic">Registration required</span>
+            </div>
+          )}
+
           {selectedEvent.url && (
             <a
               href={selectedEvent.url}
