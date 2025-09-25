@@ -56,9 +56,9 @@ jobs:
         run: mkdir -p logs
 
       - name: Run scraper
-        working-directory: backend/scraping
+        working-directory: backend
         run: |
-          python -u instagram_feed.py 2>&1 | tee logs/scraping.log
+          python -u -m scraping.instagram_feed 2>&1 | tee scraping/logs/scraping.log
         continue-on-error: false
 
       - name: Upload logs as artifacts
